@@ -38,8 +38,8 @@ export const Sidebar = () => {
       )}
 
       <aside
-        style={{ backgroundColor: '#0a0e1a' }}
         className={`
+          sidebar-root
           fixed lg:static inset-y-0 left-0 z-30
           flex flex-col
           w-[240px] lg:w-[60px]
@@ -53,16 +53,13 @@ export const Sidebar = () => {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 flex-shrink-0">
               <Hexagon className="w-4 h-4 text-white" strokeWidth={2.5} />
             </div>
-            <span className="font-semibold text-sm lg:hidden tracking-tight" style={{ color: '#ffffff' }}>
+            <span className="sidebar-title font-semibold text-sm lg:hidden tracking-tight">
               Cluster Companion
             </span>
           </div>
           <button
             onClick={toggleSidebar}
-            className="lg:hidden ml-auto p-1 rounded-md transition-colors"
-            style={{ color: 'rgba(255,255,255,0.6)' }}
-            onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
+            className="sidebar-close lg:hidden ml-auto p-1 rounded-md transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -104,7 +101,7 @@ export const Sidebar = () => {
         <div className="px-4 py-3 lg:hidden flex-shrink-0">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse-slow flex-shrink-0" />
-            <span className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <span className="sidebar-footer-text text-xs">
               Connected
             </span>
           </div>
