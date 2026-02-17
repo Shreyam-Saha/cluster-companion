@@ -1,68 +1,175 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
+@layer base {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    /* Premium Light Theme - Clean, crisp, high contrast */
+    --background: 210 20% 98%;
+    --foreground: 224 71% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+    --primary: 220 91% 54%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 9% 46%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 224 71% 4%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 220 91% 54%;
+    --radius: 0.5rem;
+
+    /* Chart palette */
+    --chart-1: 220 91% 54%;
+    --chart-2: 160 84% 39%;
+    --chart-3: 30 96% 53%;
+    --chart-4: 280 68% 60%;
+    --chart-5: 340 75% 55%;
+
+    /* Sidebar specific */
+    --sidebar-bg: 224 71% 4%;
+    --sidebar-foreground: 220 14% 80%;
+    --sidebar-border: 220 13% 15%;
+    --sidebar-active: 220 91% 54%;
+    --sidebar-hover: 220 13% 10%;
   }
-  a:hover {
-    color: #747bff;
+
+  .dark {
+    /* Premium Dark Theme - Deep, rich, low eye-strain */
+    --background: 224 71% 4%;
+    --foreground: 210 20% 98%;
+    --card: 223 47% 8%;
+    --card-foreground: 210 20% 98%;
+    --popover: 223 47% 8%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 217 92% 60%;
+    --primary-foreground: 224 71% 4%;
+    --secondary: 223 47% 12%;
+    --secondary-foreground: 210 20% 78%;
+    --muted: 223 47% 12%;
+    --muted-foreground: 218 11% 55%;
+    --accent: 223 47% 12%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 63% 51%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 216 34% 14%;
+    --input: 216 34% 14%;
+    --ring: 217 92% 60%;
+
+    --chart-1: 217 92% 60%;
+    --chart-2: 160 84% 39%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 280 68% 60%;
+    --chart-5: 340 75% 55%;
+
+    --sidebar-bg: 225 53% 5%;
+    --sidebar-foreground: 220 14% 65%;
+    --sidebar-border: 216 34% 14%;
+    --sidebar-active: 217 92% 60%;
+    --sidebar-hover: 223 47% 10%;
   }
-  button {
-    background-color: #f9f9f9;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Status color utilities */
+.text-status-healthy { color: hsl(160 84% 39%); }
+.bg-status-healthy { background-color: hsl(160 84% 39%); }
+.text-status-warning { color: hsl(38 92% 50%); }
+.bg-status-warning { background-color: hsl(38 92% 50%); }
+.text-status-critical { color: hsl(0 72% 51%); }
+.bg-status-critical { background-color: hsl(0 72% 51%); }
+.text-status-info { color: hsl(217 92% 60%); }
+.bg-status-info { background-color: hsl(217 92% 60%); }
+.text-status-unknown { color: hsl(220 9% 46%); }
+.bg-status-unknown { background-color: hsl(220 9% 46%); }
+
+/* Sidebar — light mode: white bg, blue icons */
+.sidebar-root {
+  background-color: #ffffff;
+  border-right: 1px solid hsl(220 13% 91%);
+}
+.sidebar-root .sidebar-title {
+  color: #0f172a;
+}
+.sidebar-root .sidebar-close {
+  color: #64748b;
+}
+.sidebar-root .sidebar-footer-text {
+  color: #94a3b8;
+}
+.sidebar-nav-item {
+  color: #3b82f6;
+}
+.sidebar-nav-item:hover {
+  background-color: hsl(220 91% 95%);
+  color: #2563eb;
+}
+.sidebar-nav-item.active {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Sidebar — dark mode: dark bg, white icons */
+.dark .sidebar-root {
+  background-color: #0a0e1a;
+  border-right: none;
+}
+.dark .sidebar-root .sidebar-title {
+  color: #ffffff;
+}
+.dark .sidebar-root .sidebar-close {
+  color: rgba(255, 255, 255, 0.6);
+}
+.dark .sidebar-root .sidebar-footer-text {
+  color: rgba(255, 255, 255, 0.45);
+}
+.dark .sidebar-nav-item {
+  color: rgba(255, 255, 255, 0.85);
+}
+.dark .sidebar-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+.dark .sidebar-nav-item.active {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--border));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground));
+}
+
+/* Subtle focus ring */
+@layer utilities {
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
 }
