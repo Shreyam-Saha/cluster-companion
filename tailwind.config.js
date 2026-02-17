@@ -13,6 +13,10 @@ export default {
         "2xl": "1400px",
       },
     },
+    fontFamily: {
+      sans: ['"Google Sans Code"', 'system-ui', 'sans-serif'],
+      mono: ['"Roboto Mono"', 'ui-monospace', 'monospace'],
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",

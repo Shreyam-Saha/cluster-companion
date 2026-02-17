@@ -1,6 +1,30 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+const defaultClusters = [
+  {
+    id: 'production-us-east-1',
+    name: 'prod-us-east-1',
+    environment: 'Production',
+    apiEndpoint: 'https://api.k8s.prod-us-east-1.example.com:6443',
+    k8sVersion: 'v1.28.5',
+  },
+  {
+    id: 'staging-us-west-2',
+    name: 'stg-us-west-2',
+    environment: 'Staging',
+    apiEndpoint: 'https://api.k8s.stg-us-west-2.example.com:6443',
+    k8sVersion: 'v1.28.3',
+  },
+  {
+    id: 'development-eu-central-1',
+    name: 'dev-eu-central-1',
+    environment: 'Development',
+    apiEndpoint: 'https://api.k8s.dev-eu-central-1.example.com:6443',
+    k8sVersion: 'v1.29.0',
+  },
+];
+
 export const useDashboardStore = create(
   persist(
     (set) => ({
@@ -8,9 +32,22 @@ export const useDashboardStore = create(
       theme: 'dark',
       toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
       
-      // Selected cluster
+      // Clusters
+      clusters: defaultClusters,
       selectedCluster: 'production-us-east-1',
       setSelectedCluster: (cluster) => set({ selectedCluster: cluster }),
+      addCluster: (cluster) => set((state) => ({
+        clusters: [...state.clusters, cluster],
+      })),
+      updateCluster: (id, updates) => set((state) => ({
+        clusters: state.clusters.map(c => c.id === id ? { ...c, ...updates } : c),
+      })),
+      removeCluster: (id) => set((state) => ({
+        clusters: state.clusters.filter(c => c.id !== id),
+        selectedCluster: state.selectedCluster === id
+          ? (state.clusters.find(c => c.id !== id)?.id || '')
+          : state.selectedCluster,
+      })),
       
       // Filters
       selectedNamespace: 'all',
@@ -24,8 +61,8 @@ export const useDashboardStore = create(
       
       // Settings
       settings: {
-        refreshInterval: 30, // seconds
-        cpuWarningThreshold: 70, // percentage
+        refreshInterval: 30,
+        cpuWarningThreshold: 70,
         cpuCriticalThreshold: 90,
         memoryWarningThreshold: 75,
         memoryCriticalThreshold: 90,

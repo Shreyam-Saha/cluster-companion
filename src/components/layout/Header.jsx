@@ -21,14 +21,8 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
-const clusters = [
-  { id: 'production-us-east-1', name: 'prod-us-east-1' },
-  { id: 'staging-us-west-2', name: 'stg-us-west-2' },
-  { id: 'development-eu-central-1', name: 'dev-eu-central-1' },
-];
-
 export const Header = () => {
-  const { theme, toggleTheme, selectedCluster, setSelectedCluster, toggleSidebar } = useDashboardStore();
+  const { theme, toggleTheme, selectedCluster, setSelectedCluster, toggleSidebar, clusters } = useDashboardStore();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
