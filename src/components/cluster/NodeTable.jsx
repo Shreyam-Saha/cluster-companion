@@ -14,18 +14,18 @@ import { Progress } from "@/components/ui/progress";
 
 export const NodeTable = ({ nodes, onNodeSelect, selectedNode }) => {
   return (
-    <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
-        <Table>
+    <Card className="overflow-hidden shadow-card">
+      <div className="overflow-x-auto -mx-px">
+        <Table className="min-w-[700px]">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[200px]">Node</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Roles</TableHead>
-              <TableHead>CPU</TableHead>
-              <TableHead>Memory</TableHead>
-              <TableHead>Pods</TableHead>
-              <TableHead>Age</TableHead>
+              <TableHead className="w-[180px]">Node</TableHead>
+              <TableHead className="w-[100px]">Status</TableHead>
+              <TableHead className="w-[120px]">Roles</TableHead>
+              <TableHead className="w-[140px]">CPU</TableHead>
+              <TableHead className="w-[140px]">Memory</TableHead>
+              <TableHead className="w-[80px]">Pods</TableHead>
+              <TableHead className="w-[110px]">Age</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -33,18 +33,18 @@ export const NodeTable = ({ nodes, onNodeSelect, selectedNode }) => {
               <TableRow
                 key={node.id}
                 onClick={() => onNodeSelect(node)}
-                className={`cursor-pointer ${
+                className={`cursor-pointer transition-colors ${
                   selectedNode?.id === node.id ? 'bg-muted' : ''
                 }`}
               >
                 <TableCell>
-                  <div className="flex items-center space-x-3">
-                    <Server className="w-4 h-4 text-muted-foreground" />
-                    <div>
-                      <div className="font-medium">
+                  <div className="flex items-center gap-2.5">
+                    <Server className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                    <div className="min-w-0">
+                      <div className="font-medium text-sm truncate">
                         {node.name}
                       </div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-[11px] text-muted-foreground font-mono truncate">
                         {node.ip}
                       </div>
                     </div>
@@ -52,14 +52,14 @@ export const NodeTable = ({ nodes, onNodeSelect, selectedNode }) => {
                 </TableCell>
                 
                 <TableCell>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-1.5">
                     {node.status === 'Ready' ? (
-                      <CheckCircle className="w-4 h-4 text-status-healthy" />
+                      <CheckCircle className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
                     ) : (
-                      <AlertCircle className="w-4 h-4 text-status-warning" />
+                      <AlertCircle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
                     )}
                     <span className={`text-sm ${
-                      node.status === 'Ready' ? 'text-status-healthy' : 'text-status-warning'
+                      node.status === 'Ready' ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'
                     }`}>
                       {node.status}
                     </span>
@@ -69,7 +69,7 @@ export const NodeTable = ({ nodes, onNodeSelect, selectedNode }) => {
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {node.roles.map((role) => (
-                      <Badge key={role} variant="secondary" className="text-xs">
+                      <Badge key={role} variant="secondary" className="text-[10px] px-1.5">
                         {role}
                       </Badge>
                     ))}
@@ -77,57 +77,61 @@ export const NodeTable = ({ nodes, onNodeSelect, selectedNode }) => {
                 </TableCell>
                 
                 <TableCell>
-                  <div className="space-y-1">
-                    <div className="text-sm font-medium">
-                      {node.cpu.usagePercent}%
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {node.cpu.used}/{node.cpu.capacity} cores
+                  <div className="space-y-1.5">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="text-sm font-medium tabular-nums">
+                        {node.cpu.usagePercent}%
+                      </span>
+                      <span className="text-[10px] text-muted-foreground tabular-nums">
+                        {node.cpu.used}/{node.cpu.capacity}
+                      </span>
                     </div>
                     <Progress 
                       value={node.cpu.usagePercent} 
                       className={`h-1.5 ${
                         node.cpu.usagePercent >= 90
-                          ? '[&>div]:bg-status-critical'
+                          ? '[&>div]:bg-red-500'
                           : node.cpu.usagePercent >= 70
-                          ? '[&>div]:bg-status-warning'
-                          : '[&>div]:bg-status-healthy'
+                          ? '[&>div]:bg-amber-500'
+                          : '[&>div]:bg-emerald-500'
                       }`}
                     />
                   </div>
                 </TableCell>
                 
                 <TableCell>
-                  <div className="space-y-1">
-                    <div className="text-sm font-medium">
-                      {node.memory.usagePercent}%
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {node.memory.used}/{node.memory.capacity} GB
+                  <div className="space-y-1.5">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="text-sm font-medium tabular-nums">
+                        {node.memory.usagePercent}%
+                      </span>
+                      <span className="text-[10px] text-muted-foreground tabular-nums">
+                        {node.memory.used}/{node.memory.capacity} GB
+                      </span>
                     </div>
                     <Progress 
                       value={node.memory.usagePercent}
                       className={`h-1.5 ${
                         node.memory.usagePercent >= 90
-                          ? '[&>div]:bg-status-critical'
+                          ? '[&>div]:bg-red-500'
                           : node.memory.usagePercent >= 70
-                          ? '[&>div]:bg-status-warning'
-                          : '[&>div]:bg-status-healthy'
+                          ? '[&>div]:bg-amber-500'
+                          : '[&>div]:bg-emerald-500'
                       }`}
                     />
                   </div>
                 </TableCell>
                 
                 <TableCell>
-                  <div className="text-sm font-medium">
+                  <span className="text-sm font-medium tabular-nums">
                     {node.pods.current}/{node.pods.capacity}
-                  </div>
+                  </span>
                 </TableCell>
                 
                 <TableCell>
-                  <div className="text-sm text-muted-foreground">
+                  <span className="text-sm text-muted-foreground whitespace-nowrap">
                     {format(node.createdAt, 'MMM dd, yyyy')}
-                  </div>
+                  </span>
                 </TableCell>
               </TableRow>
             ))}

@@ -1,58 +1,41 @@
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 export const ResourceGauge = ({ title, percentage, total, used, unit = 'GB' }) => {
-  const getColor = () => {
-    if (percentage >= 90) return 'hsl(0 84% 60%)'; // critical
-    if (percentage >= 70) return 'hsl(38 92% 50%)'; // warning
-    return 'hsl(158 64% 52%)'; // healthy
+  const getConfig = () => {
+    if (percentage >= 90) return { text: 'text-red-600 dark:text-red-400', indicator: 'bg-red-500', dot: 'bg-red-500', trackBg: 'bg-red-500/20' };
+    if (percentage >= 70) return { text: 'text-amber-600 dark:text-amber-400', indicator: 'bg-amber-500', dot: 'bg-amber-500', trackBg: 'bg-amber-500/20' };
+    return { text: 'text-emerald-600 dark:text-emerald-400', indicator: 'bg-emerald-500', dot: 'bg-emerald-500', trackBg: 'bg-emerald-500/20' };
   };
 
-  const data = [
-    { name: 'Used', value: percentage },
-    { name: 'Free', value: 100 - percentage },
-  ];
-
-  const color = getColor();
+  const config = getConfig();
 
   return (
-    <Card>
-      <CardContent className="p-5">
-        <div className="relative">
-          <ResponsiveContainer width="100%" height={140}>
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                startAngle={180}
-                endAngle={0}
-                innerRadius={50}
-                outerRadius={65}
-                paddingAngle={0}
-                dataKey="value"
-              >
-                <Cell fill={color} />
-                <Cell fill="hsl(var(--border))" opacity={0.2} />
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-          
-          <div className="absolute inset-0 flex flex-col items-center justify-center mt-3">
-            <span className="text-2xl font-bold" style={{ color }}>
-              {percentage}%
-            </span>
+    <Card className="shadow-card">
+      <CardContent className="p-4 sm:p-5">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className={`w-2 h-2 rounded-full ${config.dot} flex-shrink-0`} />
+            <span className="text-sm font-medium truncate">{title}</span>
           </div>
+          <span className={`text-base sm:text-lg font-semibold tabular-nums ${config.text} flex-shrink-0 ml-2`}>
+            {percentage}%
+          </span>
         </div>
-        
-        <div className="text-center mt-2 space-y-1">
-          <p className="text-xs text-muted-foreground">
-            {used} / {total} {unit}
-          </p>
-          <p className="text-xs text-muted-foreground flex items-center justify-center">
-            <span className="inline-block w-2 h-2 rounded-full mr-1.5" style={{ backgroundColor: color }}></span>
-            {title}
-          </p>
+
+        <Progress
+          value={percentage}
+          className={`h-2 ${config.trackBg}`}
+          indicatorClassName={config.indicator}
+        />
+
+        <div className="flex items-center justify-between mt-2.5 sm:mt-3">
+          <span className="text-[11px] sm:text-xs text-muted-foreground tabular-nums">
+            {used} {unit} used
+          </span>
+          <span className="text-[11px] sm:text-xs text-muted-foreground tabular-nums">
+            {total} {unit} total
+          </span>
         </div>
       </CardContent>
     </Card>

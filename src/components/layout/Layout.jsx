@@ -8,19 +8,19 @@ export const Layout = () => {
   const { theme } = useDashboardStore();
 
   useEffect(() => {
-    // Apply theme class to body
+    document.documentElement.className = theme;
     document.body.className = theme;
   }, [theme]);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar />
       
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <Header />
         
-        <main className="flex-1 overflow-auto">
-          <div className="p-6">
+        <main className="flex-1 overflow-auto scroll-smooth">
+          <div className="px-3 py-4 sm:px-4 sm:py-5 md:px-6 md:py-6 mx-auto max-w-[1600px]">
             <Outlet />
           </div>
         </main>

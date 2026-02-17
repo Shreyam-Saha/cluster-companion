@@ -1,9 +1,11 @@
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { a11yLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useDashboardStore } from '../../store/dashboardStore';
 import { Copy, Check } from 'lucide-react';
 import { useState } from 'react';
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export const YamlViewer = ({ yaml, title }) => {
   const { theme } = useDashboardStore();
@@ -16,43 +18,45 @@ export const YamlViewer = ({ yaml, title }) => {
   };
 
   return (
-    <div className="card overflow-hidden">
-      <div className="flex items-center justify-between p-4 border-b dark:border-border-dark light:border-border-light">
-        <h3 className="font-semibold dark:text-text-dark light:text-text-light">
-          {title}
-        </h3>
-        <button
+    <Card className="overflow-hidden shadow-elevated">
+      <CardHeader className="flex-row items-center justify-between space-y-0 py-3 border-b">
+        <CardTitle className="text-sm">{title}</CardTitle>
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={handleCopy}
-          className="flex items-center space-x-2 px-3 py-1.5 rounded-lg dark:bg-surface-dark-hover light:bg-surface-light-hover hover:opacity-80"
+          className="h-8 text-xs gap-1.5"
         >
           {copied ? (
             <>
-              <Check className="w-4 h-4 text-status-healthy" />
-              <span className="text-sm text-status-healthy">Copied!</span>
+              <Check className="w-3.5 h-3.5 text-emerald-500" />
+              <span className="text-emerald-500">Copied</span>
             </>
           ) : (
             <>
-              <Copy className="w-4 h-4 dark:text-text-dark-secondary light:text-text-light-secondary" />
-              <span className="text-sm dark:text-text-dark light:text-text-light">Copy</span>
+              <Copy className="w-3.5 h-3.5" />
+              <span>Copy</span>
             </>
           )}
-        </button>
-      </div>
+        </Button>
+      </CardHeader>
       <div className="overflow-x-auto">
         <SyntaxHighlighter
           language="yaml"
-          style={theme === 'dark' ? vscDarkPlus : a11yLight}
+          style={theme === 'dark' ? vscDarkPlus : vs}
           customStyle={{
             margin: 0,
             padding: '1rem',
-            fontSize: '0.875rem',
+            fontSize: '0.8125rem',
             background: 'transparent',
+            lineHeight: 1.6,
           }}
           showLineNumbers
+          lineNumberStyle={{ opacity: 0.3, fontSize: '0.75rem' }}
         >
           {yaml}
         </SyntaxHighlighter>
       </div>
-    </div>
+    </Card>
   );
 };

@@ -45,11 +45,10 @@ export const Deployments = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold flex items-center">
-          <Box className="w-6 h-6 mr-2" />
+        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
           Deployments
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -59,55 +58,57 @@ export const Deployments = () => {
 
       {/* Filters */}
       <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0 md:space-x-4">
+        <CardContent className="p-3 sm:p-4 md:pt-6 md:px-6 md:pb-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             {/* Search */}
             <div className="flex-1 max-w-md relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
               <Input
                 type="text"
                 placeholder="Search deployments..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-9"
               />
             </div>
 
-            {/* Namespace Filter */}
-            <div className="flex items-center space-x-2">
-              <Filter className="w-4 h-4 text-muted-foreground" />
-              <Select value={namespaceFilter} onValueChange={setNamespaceFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {namespaces.map(ns => (
-                    <SelectItem key={ns} value={ns}>
-                      {ns === 'all' ? 'All Namespaces' : ns}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Namespace Filter */}
+              <div className="flex items-center gap-1.5 flex-1 sm:flex-none">
+                <Filter className="w-4 h-4 text-muted-foreground flex-shrink-0 hidden sm:block" />
+                <Select value={namespaceFilter} onValueChange={setNamespaceFilter}>
+                  <SelectTrigger className="w-full sm:w-[160px] h-9 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {namespaces.map(ns => (
+                      <SelectItem key={ns} value={ns}>
+                        {ns === 'all' ? 'All Namespaces' : ns}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center space-x-1 bg-muted rounded-lg p-1">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setViewMode('grid')}
-              >
-                <Grid className="w-4 h-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setViewMode('list')}
-              >
-                <List className="w-4 h-4" />
-              </Button>
+              {/* View Mode Toggle */}
+              <div className="flex items-center bg-muted rounded-lg p-0.5 flex-shrink-0">
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setViewMode('grid')}
+                >
+                  <Grid className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'default' : 'ghost'}
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setViewMode('list')}
+                >
+                  <List className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -115,7 +116,7 @@ export const Deployments = () => {
 
       {/* Deployments Grid */}
       {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
           {filteredDeployments.map(deployment => (
             <DeploymentCard
               key={deployment.id}
@@ -127,9 +128,9 @@ export const Deployments = () => {
         </div>
       ) : (
         /* Deployments Table */
-        <Card>
+        <Card className="shadow-card overflow-hidden">
           <div className="overflow-x-auto">
-            <Table>
+            <Table className="min-w-[650px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
@@ -151,32 +152,32 @@ export const Deployments = () => {
                       {deployment.name}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-[10px] font-mono">
                         {deployment.namespace}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge
                         variant={deployment.status === 'Healthy' ? 'default' : 'destructive'}
-                        className={`text-xs ${
+                        className={`text-[10px] border-0 ${
                           deployment.status === 'Healthy'
-                            ? 'bg-status-healthy/10 text-status-healthy hover:bg-status-healthy/20'
-                            : 'bg-status-warning/10 text-status-warning hover:bg-status-warning/20'
+                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20'
+                            : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'
                         }`}
                       >
                         {deployment.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="tabular-nums">
                       {deployment.replicas.ready}/{deployment.replicas.desired}
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm text-muted-foreground truncate max-w-xs">
+                      <span className="text-sm text-muted-foreground truncate block max-w-[200px]">
                         {deployment.image}
-                      </div>
+                      </span>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-sm text-muted-foreground whitespace-nowrap">
                         {format(deployment.lastUpdated, 'MMM dd, yyyy')}
                       </span>
                     </TableCell>
@@ -195,15 +196,15 @@ export const Deployments = () => {
             className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
             onClick={() => setSelectedDeployment(null)}
           />
-          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-            <Card className="max-w-3xl w-full max-h-[90vh] overflow-hidden">
-              <CardHeader className="border-b">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-2xl">
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-3 sm:p-4">
+            <Card className="w-full max-w-3xl max-h-[90vh] overflow-hidden">
+              <CardHeader className="border-b px-4 sm:px-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="text-lg sm:text-2xl truncate">
                       {selectedDeployment.name}
                     </CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-sm text-muted-foreground mt-1 font-mono">
                       {selectedDeployment.namespace}
                     </p>
                   </div>
@@ -211,6 +212,7 @@ export const Deployments = () => {
                     variant="ghost"
                     size="icon"
                     onClick={() => setSelectedDeployment(null)}
+                    className="flex-shrink-0"
                   >
                     <X className="w-4 h-4" />
                   </Button>
@@ -218,34 +220,30 @@ export const Deployments = () => {
               </CardHeader>
 
               <ScrollArea className="max-h-[calc(90vh-100px)]">
-                <CardContent className="pt-6 space-y-6">
+                <CardContent className="p-4 sm:pt-6 sm:px-6 space-y-5 sm:space-y-6">
                   {/* Details */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                      <div className="text-sm text-muted-foreground">Status</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground mb-0.5">Status</div>
                       <div className={`font-medium ${
-                        selectedDeployment.status === 'Healthy' ? 'text-status-healthy' : 'text-status-warning'
+                        selectedDeployment.status === 'Healthy' ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'
                       }`}>
                         {selectedDeployment.status}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Replicas</div>
-                      <div>
+                      <div className="text-xs sm:text-sm text-muted-foreground mb-0.5">Replicas</div>
+                      <div className="tabular-nums">
                         {selectedDeployment.replicas.ready}/{selectedDeployment.replicas.desired}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Strategy</div>
-                      <div>
-                        {selectedDeployment.strategy}
-                      </div>
+                      <div className="text-xs sm:text-sm text-muted-foreground mb-0.5">Strategy</div>
+                      <div>{selectedDeployment.strategy}</div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Revisions</div>
-                      <div>
-                        {selectedDeployment.revisions}
-                      </div>
+                      <div className="text-xs sm:text-sm text-muted-foreground mb-0.5">Revisions</div>
+                      <div className="tabular-nums">{selectedDeployment.revisions}</div>
                     </div>
                   </div>
 
@@ -253,8 +251,8 @@ export const Deployments = () => {
 
                   {/* Image */}
                   <div>
-                    <div className="text-sm text-muted-foreground mb-1">Image</div>
-                    <div className="text-sm font-mono bg-muted p-2 rounded">
+                    <div className="text-xs sm:text-sm text-muted-foreground mb-1.5">Image</div>
+                    <div className="text-xs sm:text-sm font-mono bg-muted p-2.5 rounded overflow-x-auto">
                       {selectedDeployment.image}
                     </div>
                   </div>
@@ -263,23 +261,19 @@ export const Deployments = () => {
 
                   {/* Health Checks */}
                   <div>
-                    <div className="text-sm text-muted-foreground mb-2">Health Checks</div>
-                    <div className="flex space-x-4">
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${
-                          selectedDeployment.livenessProbe ? 'bg-status-healthy' : 'bg-status-critical'
+                    <div className="text-xs sm:text-sm text-muted-foreground mb-2">Health Checks</div>
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                          selectedDeployment.livenessProbe ? 'bg-emerald-500' : 'bg-red-500'
                         }`} />
-                        <span className="text-sm">
-                          Liveness Probe
-                        </span>
+                        <span className="text-sm">Liveness Probe</span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${
-                          selectedDeployment.readinessProbe ? 'bg-status-healthy' : 'bg-status-critical'
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                          selectedDeployment.readinessProbe ? 'bg-emerald-500' : 'bg-red-500'
                         }`} />
-                        <span className="text-sm">
-                          Readiness Probe
-                        </span>
+                        <span className="text-sm">Readiness Probe</span>
                       </div>
                     </div>
                   </div>
@@ -288,24 +282,24 @@ export const Deployments = () => {
 
                   {/* Pods */}
                   <div>
-                    <div className="text-sm text-muted-foreground mb-2">Pods</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground mb-2">Pods</div>
                     <div className="space-y-2">
                       {getDeploymentPods(selectedDeployment.name).map(pod => (
-                        <div key={pod.id} className="flex items-center justify-between p-3 rounded-lg bg-muted">
-                          <div>
-                            <div className="text-sm font-medium">
+                        <div key={pod.id} className="flex items-center justify-between gap-3 p-2.5 sm:p-3 rounded-lg bg-muted">
+                          <div className="min-w-0 flex-1">
+                            <div className="text-sm font-medium truncate">
                               {pod.name}
                             </div>
-                            <div className="text-xs text-muted-foreground">
-                              Node: {pod.node} • Restarts: {pod.restarts}
+                            <div className="text-[11px] sm:text-xs text-muted-foreground">
+                              Node: {pod.node} &middot; Restarts: {pod.restarts}
                             </div>
                           </div>
                           <Badge
                             variant={pod.status === 'Running' ? 'default' : 'destructive'}
-                            className={`text-xs ${
+                            className={`text-[10px] flex-shrink-0 border-0 ${
                               pod.status === 'Running'
-                                ? 'bg-status-healthy/10 text-status-healthy hover:bg-status-healthy/20'
-                                : 'bg-status-critical/10 text-status-critical hover:bg-status-critical/20'
+                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20'
+                                : 'bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20'
                             }`}
                           >
                             {pod.status}

@@ -45,194 +45,115 @@ export const Settings = () => {
   };
 
   return (
-    <div className="space-y-5 max-w-4xl">
+    <div className="space-y-4 sm:space-y-5 max-w-4xl">
       {/* Header */}
-      <div className="mb-5">
-        <h1 className="text-xl font-bold">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
           Settings
         </h1>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <p className="text-sm text-muted-foreground mt-1">
           Configure alerts, notifications, and dashboard preferences
         </p>
       </div>
 
       {/* Alert Thresholds */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Bell className="w-5 h-5" />
-            <CardTitle>Alert Thresholds</CardTitle>
+        <CardHeader className="px-4 sm:px-6">
+          <div className="flex items-center gap-2">
+            <Bell className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0" />
+            <CardTitle className="text-sm sm:text-base">Alert Thresholds</CardTitle>
           </div>
-          <CardDescription>
+          <CardDescription className="text-xs sm:text-sm">
             Set warning and critical thresholds for resource usage alerts
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* CPU Warning */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="cpu-warning" className="text-sm font-medium">
-                CPU Warning Threshold
-              </Label>
-              <span className="text-sm text-muted-foreground">
-                {localSettings.cpuWarningThreshold}%
-              </span>
+        <CardContent className="px-4 sm:px-6 space-y-5 sm:space-y-6">
+          {[
+            { id: 'cpu-warning', label: 'CPU Warning Threshold', key: 'cpuWarningThreshold', color: 'warning' },
+            { id: 'cpu-critical', label: 'CPU Critical Threshold', key: 'cpuCriticalThreshold', color: 'critical' },
+            { id: 'memory-warning', label: 'Memory Warning Threshold', key: 'memoryWarningThreshold', color: 'warning' },
+            { id: 'memory-critical', label: 'Memory Critical Threshold', key: 'memoryCriticalThreshold', color: 'critical' },
+          ].map(({ id, label, key, color }) => (
+            <div key={id} className="space-y-2.5">
+              <div className="flex items-center justify-between">
+                <Label htmlFor={id} className="text-xs sm:text-sm font-medium">
+                  {label}
+                </Label>
+                <span className="text-xs sm:text-sm text-muted-foreground tabular-nums">
+                  {localSettings[key]}%
+                </span>
+              </div>
+              <Slider
+                id={id}
+                min={50}
+                max={100}
+                step={1}
+                value={[localSettings[key]]}
+                onValueChange={(value) => handleSliderChange(key, value)}
+                className={`[&_[role=slider]]:bg-status-${color} [&_[role=slider]]:border-status-${color}`}
+              />
             </div>
-            <Slider
-              id="cpu-warning"
-              min={50}
-              max={100}
-              step={1}
-              value={[localSettings.cpuWarningThreshold]}
-              onValueChange={(value) => handleSliderChange('cpuWarningThreshold', value)}
-              className="[&_[role=slider]]:bg-status-warning [&_[role=slider]]:border-status-warning"
-            />
-          </div>
-
-          {/* CPU Critical */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="cpu-critical" className="text-sm font-medium">
-                CPU Critical Threshold
-              </Label>
-              <span className="text-sm text-muted-foreground">
-                {localSettings.cpuCriticalThreshold}%
-              </span>
-            </div>
-            <Slider
-              id="cpu-critical"
-              min={50}
-              max={100}
-              step={1}
-              value={[localSettings.cpuCriticalThreshold]}
-              onValueChange={(value) => handleSliderChange('cpuCriticalThreshold', value)}
-              className="[&_[role=slider]]:bg-status-critical [&_[role=slider]]:border-status-critical"
-            />
-          </div>
-
-          {/* Memory Warning */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="memory-warning" className="text-sm font-medium">
-                Memory Warning Threshold
-              </Label>
-              <span className="text-sm text-muted-foreground">
-                {localSettings.memoryWarningThreshold}%
-              </span>
-            </div>
-            <Slider
-              id="memory-warning"
-              min={50}
-              max={100}
-              step={1}
-              value={[localSettings.memoryWarningThreshold]}
-              onValueChange={(value) => handleSliderChange('memoryWarningThreshold', value)}
-              className="[&_[role=slider]]:bg-status-warning [&_[role=slider]]:border-status-warning"
-            />
-          </div>
-
-          {/* Memory Critical */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="memory-critical" className="text-sm font-medium">
-                Memory Critical Threshold
-              </Label>
-              <span className="text-sm text-muted-foreground">
-                {localSettings.memoryCriticalThreshold}%
-              </span>
-            </div>
-            <Slider
-              id="memory-critical"
-              min={50}
-              max={100}
-              step={1}
-              value={[localSettings.memoryCriticalThreshold]}
-              onValueChange={(value) => handleSliderChange('memoryCriticalThreshold', value)}
-              className="[&_[role=slider]]:bg-status-critical [&_[role=slider]]:border-status-critical"
-            />
-          </div>
+          ))}
         </CardContent>
       </Card>
 
       {/* Notification Preferences */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Bell className="w-5 h-5" />
-            <CardTitle>Notification Preferences</CardTitle>
+        <CardHeader className="px-4 sm:px-6">
+          <div className="flex items-center gap-2">
+            <Bell className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0" />
+            <CardTitle className="text-sm sm:text-base">Notification Preferences</CardTitle>
           </div>
-          <CardDescription>
+          <CardDescription className="text-xs sm:text-sm">
             Choose how you want to receive alerts
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Email */}
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="email" className="text-sm font-medium">Email Notifications</Label>
-              <p className="text-xs text-muted-foreground">Receive alerts via email</p>
+        <CardContent className="px-4 sm:px-6 space-y-4">
+          {[
+            { id: 'email', label: 'Email Notifications', desc: 'Receive alerts via email', key: 'emailNotifications' },
+            { id: 'slack', label: 'Slack Notifications', desc: 'Send alerts to Slack channels', key: 'slackNotifications' },
+            { id: 'webhook', label: 'Webhook Notifications', desc: 'POST alerts to custom webhook URL', key: 'webhookNotifications' },
+          ].map(({ id, label, desc, key }, i) => (
+            <div key={id}>
+              {i > 0 && <Separator className="mb-4" />}
+              <div className="flex items-center justify-between gap-4">
+                <div className="space-y-0.5 min-w-0">
+                  <Label htmlFor={id} className="text-xs sm:text-sm font-medium">{label}</Label>
+                  <p className="text-[11px] sm:text-xs text-muted-foreground">{desc}</p>
+                </div>
+                <Switch
+                  id={id}
+                  checked={localSettings[key]}
+                  onCheckedChange={() => handleToggle(key)}
+                  className="flex-shrink-0"
+                />
+              </div>
             </div>
-            <Switch
-              id="email"
-              checked={localSettings.emailNotifications}
-              onCheckedChange={() => handleToggle('emailNotifications')}
-            />
-          </div>
-
-          <Separator />
-
-          {/* Slack */}
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="slack" className="text-sm font-medium">Slack Notifications</Label>
-              <p className="text-xs text-muted-foreground">Send alerts to Slack channels</p>
-            </div>
-            <Switch
-              id="slack"
-              checked={localSettings.slackNotifications}
-              onCheckedChange={() => handleToggle('slackNotifications')}
-            />
-          </div>
-
-          <Separator />
-
-          {/* Webhook */}
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="webhook" className="text-sm font-medium">Webhook Notifications</Label>
-              <p className="text-xs text-muted-foreground">POST alerts to custom webhook URL</p>
-            </div>
-            <Switch
-              id="webhook"
-              checked={localSettings.webhookNotifications}
-              onCheckedChange={() => handleToggle('webhookNotifications')}
-            />
-          </div>
+          ))}
         </CardContent>
       </Card>
 
       {/* Dashboard Preferences */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Clock className="w-5 h-5" />
-            <CardTitle>Dashboard Preferences</CardTitle>
+        <CardHeader className="px-4 sm:px-6">
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0" />
+            <CardTitle className="text-sm sm:text-base">Dashboard Preferences</CardTitle>
           </div>
-          <CardDescription>
+          <CardDescription className="text-xs sm:text-sm">
             Customize how the dashboard displays data
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Refresh Interval */}
+        <CardContent className="px-4 sm:px-6 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="refresh" className="text-sm font-medium">
+            <Label htmlFor="refresh" className="text-xs sm:text-sm font-medium">
               Refresh Interval
             </Label>
             <Select
               value={localSettings.refreshInterval.toString()}
               onValueChange={(value) => setLocalSettings(prev => ({ ...prev, refreshInterval: parseInt(value) }))}
             >
-              <SelectTrigger id="refresh">
+              <SelectTrigger id="refresh" className="w-full sm:w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -244,16 +165,15 @@ export const Settings = () => {
             </Select>
           </div>
 
-          {/* Default Time Range */}
           <div className="space-y-2">
-            <Label htmlFor="timerange" className="text-sm font-medium">
+            <Label htmlFor="timerange" className="text-xs sm:text-sm font-medium">
               Default Chart Time Range
             </Label>
             <Select
               value={localSettings.defaultTimeRange}
               onValueChange={(value) => setLocalSettings(prev => ({ ...prev, defaultTimeRange: value }))}
             >
-              <SelectTrigger id="timerange">
+              <SelectTrigger id="timerange" className="w-full sm:w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -269,25 +189,26 @@ export const Settings = () => {
 
       {/* Theme Settings */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Palette className="w-5 h-5" />
-            <CardTitle>Theme Settings</CardTitle>
+        <CardHeader className="px-4 sm:px-6">
+          <div className="flex items-center gap-2">
+            <Palette className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0" />
+            <CardTitle className="text-sm sm:text-base">Theme Settings</CardTitle>
           </div>
-          <CardDescription>
+          <CardDescription className="text-xs sm:text-sm">
             Choose your preferred color scheme
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="darkmode" className="text-sm font-medium">Dark Mode</Label>
-              <p className="text-xs text-muted-foreground">Use dark theme for the dashboard</p>
+        <CardContent className="px-4 sm:px-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-0.5 min-w-0">
+              <Label htmlFor="darkmode" className="text-xs sm:text-sm font-medium">Dark Mode</Label>
+              <p className="text-[11px] sm:text-xs text-muted-foreground">Use dark theme for the dashboard</p>
             </div>
             <Switch
               id="darkmode"
               checked={theme === 'dark'}
               onCheckedChange={toggleTheme}
+              className="flex-shrink-0"
             />
           </div>
         </CardContent>
@@ -295,40 +216,40 @@ export const Settings = () => {
 
       {/* Cluster Connection Info */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Server className="w-5 h-5" />
-            <CardTitle>Cluster Information</CardTitle>
+        <CardHeader className="px-4 sm:px-6">
+          <div className="flex items-center gap-2">
+            <Server className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0" />
+            <CardTitle className="text-sm sm:text-base">Cluster Information</CardTitle>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 sm:px-6">
           <dl className="space-y-3">
             <div>
-              <dt className="text-sm text-muted-foreground">API Server Endpoint</dt>
-              <dd className="text-sm font-mono mt-1">https://api.k8s.production.example.com:6443</dd>
+              <dt className="text-xs sm:text-sm text-muted-foreground">API Server Endpoint</dt>
+              <dd className="text-xs sm:text-sm font-mono mt-1 break-all">https://api.k8s.production.example.com:6443</dd>
             </div>
             <Separator />
             <div>
-              <dt className="text-sm text-muted-foreground">Kubernetes Version</dt>
-              <dd className="text-sm mt-1">v1.28.5</dd>
+              <dt className="text-xs sm:text-sm text-muted-foreground">Kubernetes Version</dt>
+              <dd className="text-xs sm:text-sm mt-1">v1.28.5</dd>
             </div>
             <Separator />
             <div>
-              <dt className="text-sm text-muted-foreground">Cluster Name</dt>
-              <dd className="text-sm mt-1">production-us-east-1</dd>
+              <dt className="text-xs sm:text-sm text-muted-foreground">Cluster Name</dt>
+              <dd className="text-xs sm:text-sm mt-1">production-us-east-1</dd>
             </div>
           </dl>
         </CardContent>
       </Card>
 
       {/* Save Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-end pb-4 sm:pb-0">
         <Button
           onClick={handleSave}
           size="lg"
-          className={saved ? 'bg-status-healthy hover:bg-status-healthy/90' : ''}
+          className={`w-full sm:w-auto ${saved ? 'bg-emerald-600 hover:bg-emerald-600/90' : ''}`}
         >
-          <Save className="w-4 h-4 mr-2" />
+          <Save className="w-4 h-4 mr-2 flex-shrink-0" />
           {saved ? 'Saved!' : 'Save Settings'}
         </Button>
       </div>

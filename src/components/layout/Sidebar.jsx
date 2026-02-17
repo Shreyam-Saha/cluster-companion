@@ -5,12 +5,10 @@ import {
   Box, 
   Settings, 
   FileCode,
-  Menu,
-  X
+  X,
+  Hexagon
 } from 'lucide-react';
 import { useDashboardStore } from '../../store/dashboardStore';
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -19,10 +17,10 @@ import {
 } from "@/components/ui/tooltip";
 
 const navigation = [
-  { name: 'Home', to: '/', icon: Home },
+  { name: 'Overview', to: '/', icon: Home },
   { name: 'Cluster', to: '/cluster', icon: Server },
   { name: 'Deployments', to: '/deployments', icon: Box },
-  { name: 'Configurations', to: '/configurations', icon: FileCode },
+  { name: 'Configs', to: '/configurations', icon: FileCode },
   { name: 'Settings', to: '/settings', icon: Settings },
 ];
 
@@ -34,94 +32,89 @@ export const Sidebar = () => {
       {/* Mobile overlay */}
       {!sidebarCollapsed && (
         <div 
-          className="fixed inset-0 bg-black/50 z-20 lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/60 z-20 lg:hidden backdrop-blur-sm"
           onClick={toggleSidebar}
         />
       )}
 
-      {/* Sidebar */}
       <aside
+        style={{ backgroundColor: '#0a0e1a' }}
         className={`
           fixed lg:static inset-y-0 left-0 z-30
           flex flex-col
-          w-64 lg:w-14
+          w-[240px] lg:w-[60px]
           transition-all duration-300 ease-in-out
-          border-r border-border bg-card
           ${sidebarCollapsed ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'}
         `}
       >
         {/* Logo */}
-        <div className="flex items-center justify-center h-14 border-b border-border lg:px-0 px-4">
-          <div className="flex items-center space-x-3 lg:space-x-0">
-            <div className="w-8 h-8 rounded bg-primary flex items-center justify-center lg:mx-auto">
-              <Server className="w-5 h-5 text-primary-foreground" />
+        <div className="flex items-center h-14 lg:justify-center px-4 lg:px-0 flex-shrink-0">
+          <div className="flex items-center gap-3 lg:gap-0">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 flex-shrink-0">
+              <Hexagon className="w-4 h-4 text-white" strokeWidth={2.5} />
             </div>
-            <span className="font-semibold text-lg lg:hidden whitespace-nowrap">
-              K8s Monitor
+            <span className="font-semibold text-sm lg:hidden tracking-tight" style={{ color: '#ffffff' }}>
+              Cluster Companion
             </span>
           </div>
           <button
             onClick={toggleSidebar}
-            className="lg:hidden ml-auto text-muted-foreground hover:text-foreground"
+            className="lg:hidden ml-auto p-1 rounded-md transition-colors"
+            style={{ color: 'rgba(255,255,255,0.6)' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 py-4 space-y-1 lg:px-0 px-2">
+        <nav className="flex-1 py-3 lg:px-2 px-3 overflow-y-auto">
           <TooltipProvider delayDuration={0}>
-            {navigation.map((item) => (
-              <Tooltip key={item.name}>
-                <TooltipTrigger asChild>
-                  <NavLink
-                    to={item.to}
-                    className={({ isActive }) =>
-                      `
-                      flex items-center justify-center lg:justify-center space-x-3 lg:space-x-0 
-                      px-3 py-2.5 lg:py-2.5 lg:mx-1.5 rounded-md
-                      transition-colors duration-200
-                      ${
-                        isActive
-                          ? 'bg-primary text-primary-foreground shadow-sm'
-                          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+            <div className="space-y-1">
+              {navigation.map((item) => (
+                <Tooltip key={item.name}>
+                  <TooltipTrigger asChild>
+                    <NavLink
+                      to={item.to}
+                      onClick={() => {
+                        if (window.innerWidth < 1024) toggleSidebar();
+                      }}
+                      className={({ isActive }) =>
+                        `sidebar-nav-item flex items-center lg:justify-center gap-3 lg:gap-0
+                        px-3 py-2.5 lg:p-2 rounded-md text-[13px] font-medium
+                        transition-all duration-150
+                        ${isActive ? 'active' : ''}`
                       }
-                    `
-                    }
-                  >
-                    <item.icon className="w-4 h-4 flex-shrink-0" />
-                    <span className="lg:hidden whitespace-nowrap">
-                      {item.name}
-                    </span>
-                  </NavLink>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="lg:block hidden">
-                  <p>{item.name}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
+                    >
+                      <item.icon className="w-[18px] h-[18px] flex-shrink-0" />
+                      <span className="lg:hidden">{item.name}</span>
+                    </NavLink>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="hidden lg:block">
+                    <p>{item.name}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </div>
           </TooltipProvider>
         </nav>
 
-        <Separator />
-
-        {/* Footer */}
-        <div className="p-4 lg:hidden">
-          <div className="text-xs text-muted-foreground space-y-1">
-            <p className="font-medium">Kubernetes v1.28.5</p>
-            <p>3 nodes • 30 pods</p>
+        {/* Footer - mobile only */}
+        <div className="px-4 py-3 lg:hidden flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse-slow flex-shrink-0" />
+            <span className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              Connected
+            </span>
           </div>
         </div>
-      </aside>
 
-      {/* Mobile menu button */}
-      <Button
-        onClick={toggleSidebar}
-        size="icon"
-        className="fixed bottom-4 right-4 z-40 lg:hidden h-12 w-12 rounded-full shadow-lg"
-      >
-        <Menu className="w-5 h-5" />
-      </Button>
+        {/* Desktop status dot */}
+        <div className="hidden lg:flex items-center justify-center py-3 flex-shrink-0">
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse-slow" />
+        </div>
+      </aside>
     </>
   );
 };

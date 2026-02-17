@@ -1,13 +1,30 @@
-import { Server, Box, Layers, AlertCircle, Activity, TrendingUp } from 'lucide-react';
+import { Server, Box, Layers, Cpu } from 'lucide-react';
 import { StatusCard } from '../components/dashboard/StatusCard';
 import { ResourceGauge } from '../components/dashboard/ResourceGauge';
 import { AlertPanel } from '../components/dashboard/AlertPanel';
 import { EventFeed } from '../components/dashboard/EventFeed';
 import { useMockData } from '../hooks/useMockData';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+
+const ChartTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-lg border bg-card p-2.5 sm:p-3 shadow-elevated">
+        <p className="text-xs font-medium text-muted-foreground mb-1.5">{label}</p>
+        {payload.map((entry, index) => (
+          <div key={index} className="flex items-center gap-2 text-sm">
+            <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: entry.color }} />
+            <span className="text-muted-foreground">{entry.name}:</span>
+            <span className="font-medium tabular-nums">{entry.value}%</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 export const Home = () => {
   const { stats, alerts, events, timeSeriesData } = useMockData();
@@ -15,48 +32,31 @@ export const Home = () => {
   if (!stats) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">
-            Loading dashboard...
-          </p>
+        <div className="text-center space-y-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto" />
+          <p className="text-sm text-muted-foreground">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <Card className="shadow-lg">
-          <CardContent className="p-3">
-            <p className="text-xs text-muted-foreground mb-1">{label}</p>
-            {payload.map((entry, index) => (
-              <p key={index} className="text-sm font-medium" style={{ color: entry.color }}>
-                {entry.name}: {entry.value}%
-              </p>
-            ))}
-          </CardContent>
-        </Card>
-      );
-    }
-    return null;
-  };
-
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 sm:space-y-6">
       {/* Header */}
-      <div className="mb-5">
-        <h1 className="text-xl font-bold">
+      <div>
+        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
           Cluster Overview
         </h1>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          Real-time health and analytics for prod-us-east-1
+        <p className="text-sm text-muted-foreground mt-1">
+          Real-time monitoring for{' '}
+          <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded inline-block mt-0.5 sm:mt-0">
+            prod-us-east-1
+          </span>
         </p>
       </div>
 
       {/* Status Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatusCard
           title="Cluster Health"
           value={stats.clusterHealth}
@@ -64,15 +64,13 @@ export const Home = () => {
           status={stats.clusterHealth === 'Healthy' ? 'healthy' : 'warning'}
           icon={Server}
         />
-        
         <StatusCard
           title="Total Nodes"
           value={stats.nodes.total}
-          subtitle={stats.nodes.unhealthy > 0 ? `${stats.nodes.unhealthy} unhealthy` : 'All healthy'}
+          subtitle={stats.nodes.unhealthy > 0 ? `${stats.nodes.unhealthy} unhealthy` : 'All nodes healthy'}
           status={stats.nodes.unhealthy > 0 ? 'warning' : 'healthy'}
           icon={Server}
         />
-        
         <StatusCard
           title="Total Pods"
           value={stats.pods.total}
@@ -80,11 +78,10 @@ export const Home = () => {
           status={stats.pods.failed > 0 ? 'warning' : 'healthy'}
           icon={Box}
         />
-        
         <StatusCard
           title="Namespaces"
           value={stats.namespaces}
-          subtitle={`${stats.deployments} deployments`}
+          subtitle={`${stats.deployments} active deployments`}
           status="healthy"
           icon={Layers}
         />
@@ -92,11 +89,11 @@ export const Home = () => {
 
       {/* Resource Utilization */}
       <div>
-        <h2 className="text-base font-semibold mb-3 flex items-center">
-          <Activity className="w-4 h-4 mr-2" />
-          Resource Utilization
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+          <Cpu className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <h2 className="text-sm sm:text-base font-semibold">Resource Utilization</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <ResourceGauge
             title="CPU Usage"
             percentage={parseInt(stats.resources.cpu.usagePercent)}
@@ -104,7 +101,6 @@ export const Home = () => {
             used={stats.resources.cpu.used}
             unit="cores"
           />
-          
           <ResourceGauge
             title="Memory Usage"
             percentage={parseInt(stats.resources.memory.usagePercent)}
@@ -112,7 +108,6 @@ export const Home = () => {
             used={stats.resources.memory.used}
             unit="GB"
           />
-          
           <ResourceGauge
             title="Disk Usage"
             percentage={65}
@@ -123,119 +118,90 @@ export const Home = () => {
         </div>
       </div>
 
-      {/* Quick Stats Row */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center">
-            <TrendingUp className="w-4 h-4 mr-2" />
-            Quick Stats
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="text-center">
-              <div className="text-xl font-bold text-status-healthy">
-                {stats.pods.running}
+      {/* Quick Stats */}
+      <Card className="shadow-card">
+        <CardContent className="p-4 sm:p-5">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4 sm:divide-x">
+            {[
+              { label: 'Running Pods', value: stats.pods.running, color: 'text-emerald-600 dark:text-emerald-400' },
+              { label: 'Pending Pods', value: stats.pods.pending, color: 'text-amber-600 dark:text-amber-400' },
+              { label: 'Failed Pods', value: stats.pods.failed, color: 'text-red-600 dark:text-red-400' },
+              { label: 'Services', value: stats.services, color: 'text-blue-600 dark:text-blue-400' },
+              { label: 'Deployments', value: 12, color: 'text-violet-600 dark:text-violet-400' },
+            ].map((stat, i) => (
+              <div key={stat.label} className={`text-center ${i > 0 ? 'sm:pl-4' : ''}`}>
+                <div className={`text-lg sm:text-2xl font-semibold tabular-nums leading-none ${stat.color}`}>
+                  {stat.value}
+                </div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground mt-1.5 leading-tight">
+                  {stat.label}
+                </div>
               </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Running Pods
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="text-xl font-bold text-status-warning">
-                {stats.pods.pending}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Pending Pods
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="text-xl font-bold text-status-critical">
-                {stats.pods.failed}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Failed Pods
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="text-xl font-bold text-primary">
-                {stats.services}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Services
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="text-xl font-bold text-primary">
-                12
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Deployments
-              </div>
-            </div>
+            ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Cluster Resource Trends */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">
-            Cluster Resource Trends (24h)
-          </CardTitle>
+      {/* Resource Trends Chart */}
+      <Card className="shadow-card">
+        <CardHeader className="px-4 sm:px-6 pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm sm:text-base font-semibold">Resource Trends</CardTitle>
+            <Badge variant="secondary" className="text-[10px] sm:text-xs font-normal">Last 24h</Badge>
+          </div>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={250}>
-            <AreaChart data={timeSeriesData}>
+        <CardContent className="px-2 sm:px-6 pt-0 pb-3 sm:pb-4">
+          <ResponsiveContainer width="100%" height={220} className="sm:!h-[280px]">
+            <AreaChart data={timeSeriesData} margin={{ top: 10, right: 8, left: -10, bottom: 0 }}>
               <defs>
-                <linearGradient id="colorCpu" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(217.2 91.2% 59.8%)" stopOpacity={0.6}/>
-                  <stop offset="95%" stopColor="hsl(217.2 91.2% 59.8%)" stopOpacity={0.1}/>
+                <linearGradient id="gradCpu" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.15}/>
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                 </linearGradient>
-                <linearGradient id="colorMemory" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(158 64% 52%)" stopOpacity={0.6}/>
-                  <stop offset="95%" stopColor="hsl(158 64% 52%)" stopOpacity={0.1}/>
+                <linearGradient id="gradMemory" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.15}/>
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.5} />
               <XAxis
                 dataKey="timestamp"
                 stroke="hsl(var(--muted-foreground))"
-                style={{ fontSize: '11px' }}
-                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                fontSize={10}
+                tickLine={false}
+                axisLine={false}
+                interval="preserveStartEnd"
               />
               <YAxis
                 stroke="hsl(var(--muted-foreground))"
-                style={{ fontSize: '11px' }}
+                fontSize={10}
+                tickLine={false}
+                axisLine={false}
                 unit="%"
-                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                width={40}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<ChartTooltip />} />
               <Legend 
-                wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
+                wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }}
                 iconType="circle"
-                iconSize={8}
+                iconSize={7}
               />
               <Area
                 type="monotone"
                 dataKey="cpu"
-                stroke="hsl(217.2 91.2% 59.8%)"
+                stroke="#3b82f6"
                 strokeWidth={2}
                 fillOpacity={1}
-                fill="url(#colorCpu)"
+                fill="url(#gradCpu)"
                 name="CPU %"
               />
               <Area
                 type="monotone"
                 dataKey="memory"
-                stroke="hsl(158 64% 52%)"
+                stroke="#10b981"
                 strokeWidth={2}
                 fillOpacity={1}
-                fill="url(#colorMemory)"
+                fill="url(#gradMemory)"
                 name="Memory %"
               />
             </AreaChart>
@@ -243,10 +209,10 @@ export const Home = () => {
         </CardContent>
       </Card>
 
-      {/* Active Alerts and Recent Activity */}
+      {/* Alerts & Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <EventFeed events={events} />
         <AlertPanel alerts={alerts} />
+        <EventFeed events={events} />
       </div>
     </div>
   );

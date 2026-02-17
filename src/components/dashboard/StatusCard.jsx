@@ -2,67 +2,57 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 export const StatusCard = ({ title, value, subtitle, status, trend, icon: Icon }) => {
-  const getStatusColor = () => {
-    switch (status) {
-      case 'healthy':
-        return 'text-status-healthy';
-      case 'warning':
-        return 'text-status-warning';
-      case 'critical':
-        return 'text-status-critical';
-      default:
-        return 'text-foreground';
-    }
+  const statusConfig = {
+    healthy: {
+      text: 'text-emerald-600 dark:text-emerald-400',
+      bg: 'bg-emerald-500/10',
+      ring: 'ring-emerald-500/20',
+    },
+    warning: {
+      text: 'text-amber-600 dark:text-amber-400',
+      bg: 'bg-amber-500/10',
+      ring: 'ring-amber-500/20',
+    },
+    critical: {
+      text: 'text-red-600 dark:text-red-400',
+      bg: 'bg-red-500/10',
+      ring: 'ring-red-500/20',
+    },
   };
 
-  const getBackgroundClass = () => {
-    switch (status) {
-      case 'warning':
-        return 'bg-status-warning bg-opacity-10';
-      case 'healthy':
-        return 'bg-status-healthy bg-opacity-10';
-      case 'critical':
-        return 'bg-status-critical bg-opacity-10';
-      default:
-        return 'bg-muted';
-    }
-  };
-
-  const getTrendIcon = () => {
-    if (trend === 'up') return <TrendingUp className="w-4 h-4" />;
-    if (trend === 'down') return <TrendingDown className="w-4 h-4" />;
-    return <Minus className="w-4 h-4" />;
-  };
+  const config = statusConfig[status] || statusConfig.healthy;
 
   return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center space-x-3">
-          {Icon && (
-            <div className={`p-2.5 rounded-lg ${getBackgroundClass()} flex-shrink-0`}>
-              <Icon className={`w-6 h-6 ${getStatusColor()}`} />
-            </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-muted-foreground mb-1">
+    <Card className="shadow-card hover:shadow-card-hover transition-shadow">
+      <CardContent className="p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-1.5 min-w-0 flex-1">
+            <p className="text-[13px] font-medium text-muted-foreground truncate">
               {title}
             </p>
-            <div className="flex items-baseline space-x-2">
-              <h3 className={`text-2xl font-bold ${getStatusColor()}`}>
+            <div className="flex items-center gap-2">
+              <h3 className={`text-xl sm:text-2xl font-semibold tracking-tight leading-none ${config.text}`}>
                 {value}
               </h3>
               {trend && (
-                <span className="flex items-center text-sm text-muted-foreground">
-                  {getTrendIcon()}
+                <span className="text-muted-foreground flex-shrink-0">
+                  {trend === 'up' && <TrendingUp className="w-3.5 h-3.5" />}
+                  {trend === 'down' && <TrendingDown className="w-3.5 h-3.5" />}
+                  {!['up', 'down'].includes(trend) && <Minus className="w-3.5 h-3.5" />}
                 </span>
               )}
             </div>
             {subtitle && (
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-muted-foreground truncate">
                 {subtitle}
               </p>
             )}
           </div>
+          {Icon && (
+            <div className={`p-2 sm:p-2.5 rounded-lg ${config.bg} ring-1 ${config.ring} flex-shrink-0`}>
+              <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${config.text}`} />
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

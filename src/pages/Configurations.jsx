@@ -1,8 +1,19 @@
 import { useState } from 'react';
-import { FileCode, Lock, Globe, Layers, Eye } from 'lucide-react';
+import { FileCode, Lock, Globe, Layers, Eye, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { YamlViewer } from '../components/configurations/YamlViewer';
 import { useMockData } from '../hooks/useMockData';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export const Configurations = () => {
   const { configMaps, secrets, ingressRules, services } = useMockData();
@@ -72,311 +83,179 @@ ${service.ports.map(p => `  - name: ${p.name}
     protocol: ${p.protocol}`).join('\n')}`;
   };
 
+  const ConfigTable = ({ icon: Icon, title, columns, data, renderRow }) => (
+    <Card className="shadow-card overflow-hidden">
+      <CardHeader className="border-b py-3 sm:py-4 px-4 sm:px-6">
+        <div className="flex items-center gap-2">
+          <Icon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <CardTitle className="text-sm font-semibold">{title}</CardTitle>
+          <Badge variant="secondary" className="text-[10px] ml-auto">{data.length}</Badge>
+        </div>
+      </CardHeader>
+      <div className="overflow-x-auto">
+        <Table className="min-w-[500px]">
+          <TableHeader>
+            <TableRow>
+              {columns.map((col) => (
+                <TableHead key={col} className="text-xs">{col}</TableHead>
+              ))}
+              <TableHead className="text-xs w-[80px] sm:w-[100px]">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.map(renderRow)}
+          </TableBody>
+        </Table>
+      </div>
+    </Card>
+  );
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold dark:text-text-dark light:text-text-light">
-          Configurations
-        </h1>
-        <p className="text-sm dark:text-text-dark-secondary light:text-text-light-secondary mt-1">
-          ConfigMaps, secrets, ingress rules, and Services
+        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Configurations</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          ConfigMaps, Secrets, Ingress rules, and Services
         </p>
       </div>
 
       {/* ConfigMaps */}
-      <div className="card">
-        <div className="p-4 border-b dark:border-border-dark light:border-border-light">
-          <div className="flex items-center space-x-2">
-            <FileCode className="w-5 h-5 dark:text-text-dark light:text-text-light" />
-            <h2 className="text-lg font-semibold dark:text-text-dark light:text-text-light">
-              ConfigMaps
-            </h2>
-          </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="dark:bg-surface-dark-hover light:bg-surface-light-hover">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Namespace
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Data Keys
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Last Modified
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y dark:divide-border-dark light:divide-border-light">
-              {configMaps.map((cm) => (
-                <tr key={cm.id} className="hover:dark:bg-surface-dark-hover hover:light:bg-surface-light-hover">
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="font-medium dark:text-text-dark light:text-text-light">
-                      {cm.name}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 text-xs rounded dark:bg-surface-dark-hover light:bg-surface-light-hover dark:text-text-dark light:text-text-light">
-                      {cm.namespace}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="text-sm dark:text-text-dark-secondary light:text-text-light-secondary">
-                      {cm.keysCount} keys
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-sm dark:text-text-dark-secondary light:text-text-light-secondary">
-                      {format(cm.lastModified, 'MMM dd, yyyy')}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <button
-                      onClick={() => setSelectedItem({ type: 'configmap', data: cm })}
-                      className="flex items-center space-x-1 text-sm text-accent-primary hover:underline"
-                    >
-                      <Eye className="w-4 h-4" />
-                      <span>View YAML</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ConfigTable
+        icon={FileCode}
+        title="ConfigMaps"
+        columns={['Name', 'Namespace', 'Keys', 'Last Modified']}
+        data={configMaps}
+        renderRow={(cm) => (
+          <TableRow key={cm.id}>
+            <TableCell className="font-medium text-sm">{cm.name}</TableCell>
+            <TableCell>
+              <Badge variant="secondary" className="text-[10px] font-mono">{cm.namespace}</Badge>
+            </TableCell>
+            <TableCell className="text-muted-foreground text-sm">{cm.keysCount} keys</TableCell>
+            <TableCell className="text-muted-foreground text-xs whitespace-nowrap">
+              {format(cm.lastModified, 'MMM dd, yyyy')}
+            </TableCell>
+            <TableCell>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs gap-1 text-primary px-2"
+                onClick={() => setSelectedItem({ type: 'configmap', data: cm })}
+              >
+                <Eye className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="hidden sm:inline">YAML</span>
+              </Button>
+            </TableCell>
+          </TableRow>
+        )}
+      />
 
       {/* Secrets */}
-      <div className="card">
-        <div className="p-4 border-b dark:border-border-dark light:border-border-light">
-          <div className="flex items-center space-x-2">
-            <Lock className="w-5 h-5 dark:text-text-dark light:text-text-light" />
-            <h2 className="text-lg font-semibold dark:text-text-dark light:text-text-light">
-              Secrets
-            </h2>
-          </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="dark:bg-surface-dark-hover light:bg-surface-light-hover">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Namespace
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Type
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Keys
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y dark:divide-border-dark light:divide-border-light">
-              {secrets.map((secret) => (
-                <tr key={secret.id} className="hover:dark:bg-surface-dark-hover hover:light:bg-surface-light-hover">
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="font-medium dark:text-text-dark light:text-text-light">
-                      {secret.name}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 text-xs rounded dark:bg-surface-dark-hover light:bg-surface-light-hover dark:text-text-dark light:text-text-light">
-                      {secret.namespace}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-sm dark:text-text-dark-secondary light:text-text-light-secondary">
-                      {secret.type}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="text-sm dark:text-text-dark-secondary light:text-text-light-secondary">
-                      {secret.keysCount} keys
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <button
-                      onClick={() => setSelectedItem({ type: 'secret', data: secret })}
-                      className="flex items-center space-x-1 text-sm text-accent-primary hover:underline"
-                    >
-                      <Eye className="w-4 h-4" />
-                      <span>View YAML</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ConfigTable
+        icon={Lock}
+        title="Secrets"
+        columns={['Name', 'Namespace', 'Type', 'Keys']}
+        data={secrets}
+        renderRow={(secret) => (
+          <TableRow key={secret.id}>
+            <TableCell className="font-medium text-sm">{secret.name}</TableCell>
+            <TableCell>
+              <Badge variant="secondary" className="text-[10px] font-mono">{secret.namespace}</Badge>
+            </TableCell>
+            <TableCell className="text-muted-foreground text-xs font-mono">{secret.type}</TableCell>
+            <TableCell className="text-muted-foreground text-sm">{secret.keysCount} keys</TableCell>
+            <TableCell>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs gap-1 text-primary px-2"
+                onClick={() => setSelectedItem({ type: 'secret', data: secret })}
+              >
+                <Eye className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="hidden sm:inline">YAML</span>
+              </Button>
+            </TableCell>
+          </TableRow>
+        )}
+      />
 
-      {/* Ingress Rules */}
-      <div className="card">
-        <div className="p-4 border-b dark:border-border-dark light:border-border-light">
-          <div className="flex items-center space-x-2">
-            <Globe className="w-5 h-5 dark:text-text-dark light:text-text-light" />
-            <h2 className="text-lg font-semibold dark:text-text-dark light:text-text-light">
-              Ingress Rules
-            </h2>
-          </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="dark:bg-surface-dark-hover light:bg-surface-light-hover">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Host
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Paths
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  TLS
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y dark:divide-border-dark light:divide-border-light">
-              {ingressRules.map((ingress) => (
-                <tr key={ingress.id} className="hover:dark:bg-surface-dark-hover hover:light:bg-surface-light-hover">
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="font-medium dark:text-text-dark light:text-text-light">
-                      {ingress.name}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-sm text-accent-primary">
-                      {ingress.host}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="text-sm dark:text-text-dark-secondary light:text-text-light-secondary">
-                      {ingress.paths.length} path(s)
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs rounded ${
-                      ingress.tls
-                        ? 'bg-status-healthy bg-opacity-10 text-status-healthy'
-                        : 'bg-status-unknown bg-opacity-10 text-status-unknown'
-                    }`}>
-                      {ingress.tls ? 'Enabled' : 'Disabled'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <button
-                      onClick={() => setSelectedItem({ type: 'ingress', data: ingress })}
-                      className="flex items-center space-x-1 text-sm text-accent-primary hover:underline"
-                    >
-                      <Eye className="w-4 h-4" />
-                      <span>View YAML</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Ingress */}
+      <ConfigTable
+        icon={Globe}
+        title="Ingress Rules"
+        columns={['Name', 'Host', 'Paths', 'TLS']}
+        data={ingressRules}
+        renderRow={(ingress) => (
+          <TableRow key={ingress.id}>
+            <TableCell className="font-medium text-sm">{ingress.name}</TableCell>
+            <TableCell className="font-mono text-xs text-primary truncate max-w-[160px]">{ingress.host}</TableCell>
+            <TableCell className="text-muted-foreground text-sm">{ingress.paths.length} path(s)</TableCell>
+            <TableCell>
+              <Badge
+                variant="secondary"
+                className={`text-[10px] border-0 ${
+                  ingress.tls
+                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {ingress.tls ? 'Enabled' : 'Disabled'}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs gap-1 text-primary px-2"
+                onClick={() => setSelectedItem({ type: 'ingress', data: ingress })}
+              >
+                <Eye className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="hidden sm:inline">YAML</span>
+              </Button>
+            </TableCell>
+          </TableRow>
+        )}
+      />
 
       {/* Services */}
-      <div className="card">
-        <div className="p-4 border-b dark:border-border-dark light:border-border-light">
-          <div className="flex items-center space-x-2">
-            <Layers className="w-5 h-5 dark:text-text-dark light:text-text-light" />
-            <h2 className="text-lg font-semibold dark:text-text-dark light:text-text-light">
-              Services
-            </h2>
-          </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="dark:bg-surface-dark-hover light:bg-surface-light-hover">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Type
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Cluster IP
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Ports
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium dark:text-text-dark-secondary light:text-text-light-secondary uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y dark:divide-border-dark light:divide-border-light">
-              {services.map((service) => (
-                <tr key={service.id} className="hover:dark:bg-surface-dark-hover hover:light:bg-surface-light-hover">
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="font-medium dark:text-text-dark light:text-text-light">
-                      {service.name}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 text-xs rounded dark:bg-surface-dark-hover light:bg-surface-light-hover dark:text-text-dark light:text-text-light">
-                      {service.type}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-sm dark:text-text-dark-secondary light:text-text-light-secondary font-mono">
-                      {service.clusterIP}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="text-sm dark:text-text-dark-secondary light:text-text-light-secondary">
-                      {service.ports.map(p => p.port).join(', ')}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <button
-                      onClick={() => setSelectedItem({ type: 'service', data: service })}
-                      className="flex items-center space-x-1 text-sm text-accent-primary hover:underline"
-                    >
-                      <Eye className="w-4 h-4" />
-                      <span>View YAML</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ConfigTable
+        icon={Layers}
+        title="Services"
+        columns={['Name', 'Type', 'Cluster IP', 'Ports']}
+        data={services}
+        renderRow={(service) => (
+          <TableRow key={service.id}>
+            <TableCell className="font-medium text-sm">{service.name}</TableCell>
+            <TableCell>
+              <Badge variant="secondary" className="text-[10px]">{service.type}</Badge>
+            </TableCell>
+            <TableCell className="font-mono text-xs text-muted-foreground">{service.clusterIP}</TableCell>
+            <TableCell className="text-muted-foreground text-xs tabular-nums">{service.ports.map(p => p.port).join(', ')}</TableCell>
+            <TableCell>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs gap-1 text-primary px-2"
+                onClick={() => setSelectedItem({ type: 'service', data: service })}
+              >
+                <Eye className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="hidden sm:inline">YAML</span>
+              </Button>
+            </TableCell>
+          </TableRow>
+        )}
+      />
 
       {/* YAML Viewer Modal */}
       {selectedItem && (
         <>
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm"
             onClick={() => setSelectedItem(null)}
           />
-          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-            <div className="max-w-4xl w-full max-h-[90vh] overflow-hidden">
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-3 sm:p-4">
+            <div className="w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col gap-3">
               <YamlViewer
                 yaml={
                   selectedItem.type === 'configmap'
@@ -389,12 +268,13 @@ ${service.ports.map(p => `  - name: ${p.name}
                 }
                 title={`${selectedItem.type.toUpperCase()}: ${selectedItem.data.name}`}
               />
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => setSelectedItem(null)}
-                className="mt-4 w-full px-4 py-2 rounded-lg dark:bg-surface-dark light:bg-surface-light hover:opacity-80"
+                className="w-full"
               >
                 Close
-              </button>
+              </Button>
             </div>
           </div>
         </>
