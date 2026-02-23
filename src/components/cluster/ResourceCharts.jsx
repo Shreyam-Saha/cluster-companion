@@ -1,6 +1,7 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { TIME_RANGE_LABELS } from '../dashboard/TimeRangeSelector';
 
 const ChartTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -20,11 +21,13 @@ const ChartTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export const ResourceCharts = ({ data }) => {
-  const namespaceData = [
+export const ResourceCharts = ({ data, timeRange = '24h', namespaceUsage }) => {
+  const rangeLabel = TIME_RANGE_LABELS[timeRange] || 'Last 24h';
+
+  const nsData = namespaceUsage || [
     { name: 'production', cpu: 75, memory: 85 },
     { name: 'default', cpu: 20, memory: 35 },
-    { name: 'infra', cpu: 45, memory: 55 },
+    { name: 'staging', cpu: 45, memory: 55 },
     { name: 'monitoring', cpu: 30, memory: 40 },
     { name: 'kube-system', cpu: 55, memory: 65 },
   ];
@@ -44,7 +47,7 @@ export const ResourceCharts = ({ data }) => {
           <CardHeader className="pb-2 px-4 sm:px-6">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-semibold">CPU & Memory Trends</CardTitle>
-              <Badge variant="secondary" className="text-[10px] font-normal">24h</Badge>
+              <Badge variant="secondary" className="text-[10px] font-normal">{rangeLabel}</Badge>
             </div>
           </CardHeader>
           <CardContent className="px-2 sm:px-4 pb-3">
@@ -77,7 +80,7 @@ export const ResourceCharts = ({ data }) => {
           <CardHeader className="pb-2 px-4 sm:px-6">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-semibold">Network I/O</CardTitle>
-              <Badge variant="secondary" className="text-[10px] font-normal">MB/s</Badge>
+              <Badge variant="secondary" className="text-[10px] font-normal">{rangeLabel}</Badge>
             </div>
           </CardHeader>
           <CardContent className="px-2 sm:px-4 pb-3">
@@ -113,7 +116,7 @@ export const ResourceCharts = ({ data }) => {
         </CardHeader>
         <CardContent className="px-2 sm:px-4 pb-3">
           <ResponsiveContainer width="100%" height={200} className="sm:!h-[240px]">
-            <BarChart data={namespaceData} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
+            <BarChart data={nsData} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.5} />
               <XAxis dataKey="name" {...axisProps} />
               <YAxis {...axisProps} unit="%" width={35} />

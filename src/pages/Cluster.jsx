@@ -3,7 +3,9 @@ import { Filter, Server } from 'lucide-react';
 import { NodeTable } from '../components/cluster/NodeTable';
 import { NodeDetailPanel } from '../components/cluster/NodeDetailPanel';
 import { ResourceCharts } from '../components/cluster/ResourceCharts';
+import { TimeRangeSelector } from '../components/dashboard/TimeRangeSelector';
 import { useMockData } from '../hooks/useMockData';
+import { useDashboardStore } from '../store/dashboardStore';
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -16,7 +18,8 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const Cluster = () => {
-  const { nodes, timeSeriesData, events } = useMockData();
+  const { nodes, timeSeriesData, events, namespaceUsage } = useMockData();
+  const timeRange = useDashboardStore((s) => s.timeRange);
   const [selectedNode, setSelectedNode] = useState(null);
   const [eventFilter, setEventFilter] = useState('all');
 
@@ -27,11 +30,14 @@ export const Cluster = () => {
   return (
     <div className="space-y-5 sm:space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Cluster</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Node health, resource trends, and events
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Cluster</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Node health, resource trends, and events
+          </p>
+        </div>
+        <TimeRangeSelector />
       </div>
 
       {/* Nodes */}
@@ -49,7 +55,7 @@ export const Cluster = () => {
       </div>
 
       {/* Charts */}
-      <ResourceCharts data={timeSeriesData} />
+      <ResourceCharts data={timeSeriesData} timeRange={timeRange} namespaceUsage={namespaceUsage} />
 
       {/* Events */}
       <Card className="shadow-card">

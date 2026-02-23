@@ -3,7 +3,9 @@ import { StatusCard } from '../components/dashboard/StatusCard';
 import { ResourceGauge } from '../components/dashboard/ResourceGauge';
 import { AlertPanel } from '../components/dashboard/AlertPanel';
 import { EventFeed } from '../components/dashboard/EventFeed';
+import { TimeRangeSelector, TIME_RANGE_LABELS } from '../components/dashboard/TimeRangeSelector';
 import { useMockData } from '../hooks/useMockData';
+import { useDashboardStore } from '../store/dashboardStore';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -28,6 +30,11 @@ const ChartTooltip = ({ active, payload, label }) => {
 
 export const Home = () => {
   const { stats, alerts, events, timeSeriesData } = useMockData();
+  const clusters = useDashboardStore((s) => s.clusters);
+  const selectedCluster = useDashboardStore((s) => s.selectedCluster);
+  const timeRange = useDashboardStore((s) => s.timeRange);
+
+  const clusterName = clusters.find(c => c.id === selectedCluster)?.name || selectedCluster;
 
   if (!stats) {
     return (
@@ -43,16 +50,19 @@ export const Home = () => {
   return (
     <div className="space-y-5 sm:space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
-          Cluster Overview
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Real-time monitoring for{' '}
-          <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded inline-block mt-0.5 sm:mt-0">
-            prod-us-east-1
-          </span>
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
+            Cluster Overview
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Real-time monitoring for{' '}
+            <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded inline-block mt-0.5 sm:mt-0">
+              {clusterName}
+            </span>
+          </p>
+        </div>
+        <TimeRangeSelector />
       </div>
 
       {/* Status Cards */}
@@ -127,7 +137,7 @@ export const Home = () => {
               { label: 'Pending Pods', value: stats.pods.pending, color: 'text-amber-600 dark:text-amber-400' },
               { label: 'Failed Pods', value: stats.pods.failed, color: 'text-red-600 dark:text-red-400' },
               { label: 'Services', value: stats.services, color: 'text-blue-600 dark:text-blue-400' },
-              { label: 'Deployments', value: 12, color: 'text-violet-600 dark:text-violet-400' },
+              { label: 'Deployments', value: stats.deployments, color: 'text-violet-600 dark:text-violet-400' },
             ].map((stat, i) => (
               <div key={stat.label} className={`text-center ${i > 0 ? 'sm:pl-4' : ''}`}>
                 <div className={`text-lg sm:text-2xl font-semibold tabular-nums leading-none ${stat.color}`}>
@@ -147,7 +157,7 @@ export const Home = () => {
         <CardHeader className="px-4 sm:px-6 pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm sm:text-base font-semibold">Resource Trends</CardTitle>
-            <Badge variant="secondary" className="text-[10px] sm:text-xs font-normal">Last 24h</Badge>
+            <Badge variant="secondary" className="text-[10px] sm:text-xs font-normal">{TIME_RANGE_LABELS[timeRange]}</Badge>
           </div>
         </CardHeader>
         <CardContent className="px-2 sm:px-6 pt-0 pb-3 sm:pb-4">

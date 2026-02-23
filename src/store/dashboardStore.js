@@ -86,6 +86,10 @@ export const useDashboardStore = create(
       selectedDeployment: null,
       setSelectedDeployment: (deployment) => set({ selectedDeployment: deployment }),
       
+      // Time range for charts
+      timeRange: '24h',
+      setTimeRange: (range) => set({ timeRange: range }),
+
       // Settings
       settings: {
         refreshInterval: 30,
