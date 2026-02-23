@@ -1,6 +1,8 @@
 import { X } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useMockData } from '../../hooks/useMockData';
+import { useDashboardStore } from '../../store/dashboardStore';
+import { TIME_RANGE_LABELS } from '../dashboard/TimeRangeSelector';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +27,8 @@ const ChartTooltip = ({ active, payload, label }) => {
 
 export const NodeDetailPanel = ({ node, onClose }) => {
   const { timeSeriesData } = useMockData();
+  const timeRange = useDashboardStore((s) => s.timeRange);
+  const rangeLabel = TIME_RANGE_LABELS[timeRange] || 'Last 24h';
 
   if (!node) return null;
 
@@ -99,7 +103,7 @@ export const NodeDetailPanel = ({ node, onClose }) => {
                 <CardHeader className="pb-2 px-4 sm:px-6">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-sm">{label}</CardTitle>
-                    <Badge variant="secondary" className="text-[10px] font-normal">24h</Badge>
+                    <Badge variant="secondary" className="text-[10px] font-normal">{rangeLabel}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="px-2 sm:px-4 pb-3">
